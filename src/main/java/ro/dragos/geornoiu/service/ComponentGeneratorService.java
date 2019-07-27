@@ -1,6 +1,6 @@
-package main.java.ro.dragos.geornoiu.service;
+package ro.dragos.geornoiu.service;
 
-import main.java.ro.dragos.geornoiu.enums.Component;
+import ro.dragos.geornoiu.enums.Component;
 
 /**
  * Service used to manage component related actions.

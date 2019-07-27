@@ -1,9 +1,9 @@
-package main.java.ro.dragos.geornoiu.producer;
+package ro.dragos.geornoiu.producer;
 
-import main.java.ro.dragos.geornoiu.enums.Component;
-import main.java.ro.dragos.geornoiu.service.ComponentGeneratorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ro.dragos.geornoiu.enums.Component;
+import ro.dragos.geornoiu.service.ComponentGeneratorService;
 
 import java.util.Queue;
 

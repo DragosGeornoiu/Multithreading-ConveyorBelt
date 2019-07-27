@@ -1,4 +1,4 @@
-package main.java.ro.dragos.geornoiu.exception;
+package ro.dragos.geornoiu.exception;
 
 /**
  * Exception thrown when the robot type is invalid.

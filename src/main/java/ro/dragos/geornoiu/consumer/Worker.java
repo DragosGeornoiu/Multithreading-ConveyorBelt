@@ -1,9 +1,9 @@
-package main.java.ro.dragos.geornoiu.consumer;
+package ro.dragos.geornoiu.consumer;
 
-import main.java.ro.dragos.geornoiu.enums.Component;
-import main.java.ro.dragos.geornoiu.enums.RobotType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ro.dragos.geornoiu.enums.Component;
+import ro.dragos.geornoiu.enums.RobotType;
 
 import java.util.Map;
 import java.util.Queue;

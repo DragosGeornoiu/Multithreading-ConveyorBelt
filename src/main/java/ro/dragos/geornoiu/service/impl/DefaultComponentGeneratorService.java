@@ -1,7 +1,7 @@
-package main.java.ro.dragos.geornoiu.service.impl;
+package ro.dragos.geornoiu.service.impl;
 
-import main.java.ro.dragos.geornoiu.enums.Component;
-import main.java.ro.dragos.geornoiu.service.ComponentGeneratorService;
+import ro.dragos.geornoiu.enums.Component;
+import ro.dragos.geornoiu.service.ComponentGeneratorService;
 
 import java.util.Arrays;
 import java.util.Collections;

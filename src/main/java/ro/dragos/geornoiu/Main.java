@@ -1,7 +1,8 @@
-package main.java.ro.dragos.geornoiu;
+package ro.dragos.geornoiu;
 
-import main.java.ro.dragos.geornoiu.enums.RobotType;
-import main.java.ro.dragos.geornoiu.service.factory.ACMEFactory;
+import ro.dragos.geornoiu.enums.RobotType;
+import ro.dragos.geornoiu.exception.InvalidRobotTypeException;
+import ro.dragos.geornoiu.service.factory.ACMEFactory;
 
 public class Main {
 
@@ -16,7 +17,7 @@ public class Main {
         for (int i = 0; i < noOfDry2000Workers; i++) {
             try {
                 new Thread(objectFactory.getWorker(RobotType.DRY2000, String.valueOf(i))).start();
-            } catch (main.java.ro.dragos.geornoiu.exception.InvalidRobotTypeException irte) {
+            } catch (InvalidRobotTypeException irte) {
                 //log the excepion
             }
 

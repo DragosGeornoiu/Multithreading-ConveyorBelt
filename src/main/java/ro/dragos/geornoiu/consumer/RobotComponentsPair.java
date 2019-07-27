@@ -1,4 +1,4 @@
-package main.java.ro.dragos.geornoiu.consumer;
+package ro.dragos.geornoiu.consumer;
 
 /**
  * Class which is responsible for managing what components are needed for constructing a robot and what components

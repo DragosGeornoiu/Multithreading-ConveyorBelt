@@ -1,6 +1,6 @@
-package main.java.ro.dragos.geornoiu.service.factory;
+package ro.dragos.geornoiu.service.factory;
 
-import main.java.ro.dragos.geornoiu.enums.Component;
+import ro.dragos.geornoiu.enums.Component;
 
 import java.util.LinkedList;
 import java.util.Queue;

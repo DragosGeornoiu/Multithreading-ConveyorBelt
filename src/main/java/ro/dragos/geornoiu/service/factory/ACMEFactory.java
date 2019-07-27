@@ -1,13 +1,13 @@
-package main.java.ro.dragos.geornoiu.service.factory;
+package ro.dragos.geornoiu.service.factory;
 
-import main.java.ro.dragos.geornoiu.consumer.RobotComponentsPair;
-import main.java.ro.dragos.geornoiu.consumer.Worker;
-import main.java.ro.dragos.geornoiu.enums.Component;
-import main.java.ro.dragos.geornoiu.enums.RobotType;
-import main.java.ro.dragos.geornoiu.exception.InvalidRobotTypeException;
-import main.java.ro.dragos.geornoiu.producer.FactorySupplier;
-import main.java.ro.dragos.geornoiu.service.ComponentGeneratorService;
-import main.java.ro.dragos.geornoiu.service.impl.DefaultComponentGeneratorService;
+import ro.dragos.geornoiu.consumer.RobotComponentsPair;
+import ro.dragos.geornoiu.consumer.Worker;
+import ro.dragos.geornoiu.enums.Component;
+import ro.dragos.geornoiu.enums.RobotType;
+import ro.dragos.geornoiu.exception.InvalidRobotTypeException;
+import ro.dragos.geornoiu.producer.FactorySupplier;
+import ro.dragos.geornoiu.service.ComponentGeneratorService;
+import ro.dragos.geornoiu.service.impl.DefaultComponentGeneratorService;
 
 import java.util.HashMap;
 import java.util.Map;

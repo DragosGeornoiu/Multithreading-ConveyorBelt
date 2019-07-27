@@ -1,4 +1,4 @@
-package main.java.ro.dragos.geornoiu.enums;
+package ro.dragos.geornoiu.enums;
 
 /**
  * The types of robots that can be constructed.
