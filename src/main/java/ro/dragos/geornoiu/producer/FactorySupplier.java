@@ -2,6 +2,7 @@ package ro.dragos.geornoiu.producer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ro.dragos.geornoiu.constants.ACMEConstants;
 import ro.dragos.geornoiu.enums.Component;
 import ro.dragos.geornoiu.service.ComponentGeneratorService;
 
@@ -18,7 +19,6 @@ public class FactorySupplier implements Runnable {
     private ComponentGeneratorService componentGenerator;
     private final Queue<Component> conveyorBelt;
 
-    private static final int QUEUE_SIZE_LIMIT = 10;
     private static final int TIME_IN_MILLIS_TO_WAIT_BEFORE_ADDING_NEXT_COMPONENT = 1000;
     private static final int MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL = 10000;
 
@@ -33,7 +33,7 @@ public class FactorySupplier implements Runnable {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             synchronized (this.conveyorBelt) {
-                while (this.conveyorBelt.size() == QUEUE_SIZE_LIMIT) {
+                while (this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT) {
                     try {
                         LOG.info("Queue is full. {} is waiting.", this.name);
 
@@ -41,7 +41,7 @@ public class FactorySupplier implements Runnable {
                         // the producer or remove the fist component on the queue if 10 seconds have passed
                         this.conveyorBelt.wait(MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL);
 
-                        if (this.conveyorBelt.size() == QUEUE_SIZE_LIMIT) {
+                        if (this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT) {
                             this.conveyorBelt.remove();
                             LOG.info("{} is removed component {} from conveyor belt.", this.name,
                                     this.conveyorBelt.peek());
@@ -54,7 +54,7 @@ public class FactorySupplier implements Runnable {
 
                 Component component = this.componentGenerator.retrieveComponent();
 
-                this.conveyorBelt.add(component);
+                this.conveyorBelt.offer(component);
 
                 LOG.info("{} added component {} to conveyor belt", this.name, component.name());
                 this.printQueue();

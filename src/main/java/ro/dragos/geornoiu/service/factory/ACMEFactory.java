@@ -7,7 +7,6 @@ import ro.dragos.geornoiu.enums.RobotType;
 import ro.dragos.geornoiu.exception.InvalidRobotTypeException;
 import ro.dragos.geornoiu.producer.FactorySupplier;
 import ro.dragos.geornoiu.service.ComponentGeneratorService;
-import ro.dragos.geornoiu.service.impl.DefaultComponentGeneratorService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +16,6 @@ import java.util.Queue;
  * Factory responsible of building the objects of the application.
  */
 public class ACMEFactory {
-    private QueueStorage queueStorage;
     private ComponentGeneratorService componentGenerator;
 
     private static final int NUMBER_OF_MAIN_UNITS_FOR_ROBOTS = 1;
@@ -25,7 +23,6 @@ public class ACMEFactory {
     private static final int NUMBER_OF_MOPS_FOR_WET2000_ROBOT = 2;
 
     public ACMEFactory(ComponentGeneratorService componentGeneratorService) {
-        this.queueStorage = QueueStorage.getInstance();
         this.componentGenerator = componentGeneratorService;
     }
 
@@ -36,7 +33,7 @@ public class ACMEFactory {
      * @return the factory supplier.
      */
     public FactorySupplier getComponentProducer(String producerName) {
-        Queue<Component> conveyorBelt = queueStorage.getConveyorBelt();
+        Queue<Component> conveyorBelt = QueueStorage.getConveyorBelt();
         return new FactorySupplier(producerName, conveyorBelt, componentGenerator);
     }
 
@@ -52,7 +49,7 @@ public class ACMEFactory {
             throw new InvalidRobotTypeException("RobotType cannot be null.");
         }
 
-        Queue<Component> conveyorBelt = queueStorage.getConveyorBelt();
+        Queue<Component> conveyorBelt = QueueStorage.getConveyorBelt();
 
         Map<Component, RobotComponentsPair> robotComponentsMap = null;
 
@@ -102,10 +99,6 @@ public class ACMEFactory {
         robotComponentsPairMap.put(Component.MOP, mopPairs);
 
         return robotComponentsPairMap;
-    }
-
-    public QueueStorage getQueueStorage() {
-        return queueStorage;
     }
 
     public ComponentGeneratorService getComponentGenerator() {
