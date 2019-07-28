@@ -32,7 +32,7 @@ public class ACMEFactory {
      * @param producerName representing the name of the factory supplier.
      * @return the factory supplier.
      */
-    public FactorySupplier getComponentProducer(String producerName) {
+    public FactorySupplier getFactorySupplier(String producerName) {
         Queue<Component> conveyorBelt = QueueStorage.getConveyorBelt();
         return new FactorySupplier(producerName, conveyorBelt, componentGenerator);
     }

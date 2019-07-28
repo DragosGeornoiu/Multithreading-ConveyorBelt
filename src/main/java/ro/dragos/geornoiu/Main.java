@@ -37,7 +37,7 @@ public class Main {
             }
         }
 
-        new Thread(objectFactory.getComponentProducer("Producer")).start();
+        new Thread(objectFactory.getFactorySupplier("Producer")).start();
 
         // Let the simulation run
         Thread.sleep(numberOfSeconds * 1000);
