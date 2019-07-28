@@ -52,14 +52,18 @@ public class FactorySupplier implements Runnable {
                     }
                 }
 
-                Component component = this.componentGenerator.retrieveComponent();
+                //make another check before adding element, the thread might of been interrupted while it was
+                // in wait previous to this block of code
+                if (!Thread.currentThread().isInterrupted()) {
+                    Component component = this.componentGenerator.retrieveComponent();
 
-                this.conveyorBelt.offer(component);
+                    this.conveyorBelt.offer(component);
 
-                LOG.info("{} added component {} to conveyor belt", this.name, component.name());
-                this.printQueue();
+                    LOG.info("{} added component {} to conveyor belt", this.name, component.name());
+                    this.printQueue();
 
-                this.conveyorBelt.notifyAll();
+                    this.conveyorBelt.notifyAll();
+                }
             }
 
             try {
