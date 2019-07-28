@@ -43,7 +43,7 @@ public class Worker implements Runnable {
                     RobotComponentsPair robotComponentsPair = robotComponentsMap.get(component);
                     if (robotComponentsPair == null || !robotComponentsPair.isComponentNeeded()) {
                         LOG.info("Worker {} does not need component {} since it has {}", this.name, component.name(),
-                                (robotComponentsPair == null ? " no need for that type of component."
+                                (robotComponentsPair == null ? "no need for that type of component."
                                         : robotComponentsPair.getNumberOfComponentsCurrentlyPossessed()));
                         conveyorBelt.wait();
 
@@ -52,18 +52,18 @@ public class Worker implements Runnable {
 
                         robotComponentsMap.get(component).addComponent();
                         LOG.info("Worker {} has taken component {} from the conveyor belt. Queue size is now {}.",
-                                component.name(), component.name(), conveyorBelt.size());
+                                this.name, component.name(), conveyorBelt.size());
                         conveyorBelt.notifyAll();
                     }
                 }
 
                 if (areAllComponenetsCollected()) {
-                    //sleep is outside synchronized block
+                    //thread sleep is outside synchronized block
                     assembleRobot();
                 }
             }
         } catch (InterruptedException ie) {
-            //log exception
+            LOG.error("{} was interrupted and is being shut down", this.name);
             Thread.currentThread().interrupt();
         }
     }
@@ -87,8 +87,16 @@ public class Worker implements Runnable {
             robotComponentsPair.clearPossesedComponents();
         }
 
-        LOG.info("Worker {} has finished asselmbling {} in his lifetime.", this.name, this.noOfAssembledRobots);
+        LOG.info("Worker {} has assembled {} robots in his lifetime.", this.name, this.noOfAssembledRobots);
 
         Thread.sleep(NO_OF_MILLIS_NEEDED_TO_BUILD_A_ROBOT);
+    }
+
+    public int getNoOfAssembledRobots() {
+        return noOfAssembledRobots;
+    }
+
+    public Map<Component, RobotComponentsPair> getRobotComponentsMap() {
+        return robotComponentsMap;
     }
 }

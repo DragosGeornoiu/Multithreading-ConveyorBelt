@@ -42,9 +42,9 @@ public class FactorySupplier implements Runnable {
                         this.conveyorBelt.wait(MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL);
 
                         if (this.conveyorBelt.size() == QUEUE_SIZE_LIMIT) {
-                            LOG.info("{} is removing component {} from conveyor belt.", this.name,
-                                    this.conveyorBelt.peek());
                             this.conveyorBelt.remove();
+                            LOG.info("{} is removed component {} from conveyor belt.", this.name,
+                                    this.conveyorBelt.peek());
                         }
                     } catch (InterruptedException e) {
                         LOG.error("{} was interrupted and is being shut down", this.name);
@@ -56,7 +56,7 @@ public class FactorySupplier implements Runnable {
 
                 this.conveyorBelt.add(component);
 
-                LOG.info("{} is added component {} to conveyor belt", this.name, component.name());
+                LOG.info("{} added component {} to conveyor belt", this.name, component.name());
                 this.printQueue();
 
                 this.conveyorBelt.notifyAll();

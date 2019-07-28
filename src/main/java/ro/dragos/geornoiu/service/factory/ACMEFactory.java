@@ -24,9 +24,9 @@ public class ACMEFactory {
     private static final int NUMBER_OF_BROOMS_FOR_DRY2000_ROBOT = 2;
     private static final int NUMBER_OF_MOPS_FOR_WET2000_ROBOT = 2;
 
-    public ACMEFactory() {
+    public ACMEFactory(ComponentGeneratorService componentGeneratorService) {
         this.queueStorage = QueueStorage.getInstance();
-        this.componentGenerator = new DefaultComponentGeneratorService();
+        this.componentGenerator = componentGeneratorService;
     }
 
     /**
@@ -68,7 +68,7 @@ public class ACMEFactory {
             workerName = "";
         }
 
-        workerName = robotType + workerName;
+        workerName = robotType + "-" + workerName;
 
         return new Worker(workerName, conveyorBelt, robotComponentsMap);
     }
@@ -104,4 +104,11 @@ public class ACMEFactory {
         return robotComponentsPairMap;
     }
 
+    public QueueStorage getQueueStorage() {
+        return queueStorage;
+    }
+
+    public ComponentGeneratorService getComponentGenerator() {
+        return componentGenerator;
+    }
 }
