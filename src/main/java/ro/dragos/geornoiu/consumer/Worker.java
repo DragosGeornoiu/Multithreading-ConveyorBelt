@@ -15,10 +15,10 @@ import java.util.Queue;
 public class Worker implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(Worker.class);
 
-    private String name;
     private int noOfAssembledRobots;
+    private final String name;
     private final Queue<Component> conveyorBelt;
-    private Map<Component, RobotComponentsPair> robotComponentsMap;
+    private final Map<Component, RobotComponentsPair> robotComponentsMap;
 
     private static final int NO_OF_MILLIS_NEEDED_TO_BUILD_A_ROBOT = 3000;
 
@@ -34,30 +34,20 @@ public class Worker implements Runnable {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 synchronized (this.conveyorBelt) {
-                    while (this.conveyorBelt.isEmpty()) {
+                    while (!isComponentFromConveyorBeltNeeded(this.conveyorBelt.peek())) {
                         this.conveyorBelt.wait();
                     }
 
-                    Component component = this.conveyorBelt.peek();
+                    Component component = this.conveyorBelt.poll();
 
-                    RobotComponentsPair robotComponentsPair = robotComponentsMap.get(component);
-                    if (robotComponentsPair == null || !robotComponentsPair.isComponentNeeded()) {
-                        LOG.info("Worker {} does not need component {} since it has {}", this.name, component.name(),
-                                (robotComponentsPair == null ? "no need for that type of component."
-                                        : robotComponentsPair.getNumberOfComponentsCurrentlyPossessed()));
-                        conveyorBelt.wait();
+                    this.robotComponentsMap.get(component).addComponent();
+                    LOG.info("Worker {} has taken component {} from the conveyor belt. Queue size is now {}.",
+                            this.name, component.name(), this.conveyorBelt.size());
 
-                    } else {
-                        component = conveyorBelt.poll();
-
-                        robotComponentsMap.get(component).addComponent();
-                        LOG.info("Worker {} has taken component {} from the conveyor belt. Queue size is now {}.",
-                                this.name, component.name(), conveyorBelt.size());
-                        conveyorBelt.notifyAll();
-                    }
+                    this.conveyorBelt.notifyAll();
                 }
 
-                if (areAllComponenetsCollected()) {
+                if (areAllComponentsCollected()) {
                     //thread sleep is outside synchronized block
                     assembleRobot();
                 }
@@ -68,10 +58,33 @@ public class Worker implements Runnable {
         }
     }
 
+    private boolean isComponentFromConveyorBeltNeeded(Component component) {
+        if (component == null) {
+            LOG.debug("Worker {} found queue empty.", this.name);
+            return false;
+        }
+
+        RobotComponentsPair robotComponentsPair = this.robotComponentsMap.get(component);
+
+        if (robotComponentsPair == null) {
+            LOG.info("Worker {} does not need component {} since it has no need for that type of component.",
+                    this.name, component.name());
+            return false;
+        }
+
+        if (!robotComponentsPair.isComponentNeeded()) {
+            LOG.info("Worker {} does not need component {} since it has {}", this.name, component.name(),
+                    robotComponentsPair.getNumberOfComponentsCurrentlyPossessed());
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Check if the worker has all the necessary components to build the robot.
      */
-    private boolean areAllComponenetsCollected() {
+    private boolean areAllComponentsCollected() {
         for (RobotComponentsPair robotComponentsPair : robotComponentsMap.values()) {
             if (robotComponentsPair.isComponentNeeded()) {
                 return false;

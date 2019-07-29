@@ -15,8 +15,8 @@ import java.util.Queue;
 public class FactorySupplier implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(FactorySupplier.class);
 
-    private String name;
-    private ComponentGeneratorService componentGenerator;
+    private final String name;
+    private final ComponentGeneratorService componentGenerator;
     private final Queue<Component> conveyorBelt;
 
     private static final int TIME_IN_MILLIS_TO_WAIT_BEFORE_ADDING_NEXT_COMPONENT = 1000;
@@ -31,10 +31,10 @@ public class FactorySupplier implements Runnable {
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-            synchronized (this.conveyorBelt) {
-                while (this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT) {
-                    try {
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                synchronized (this.conveyorBelt) {
+                    while (this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT) {
                         LOG.info("Queue is full. {} is waiting.", this.name);
 
                         // queue is full, wait until a consumer takes a component from the conveyor belt and notifies
@@ -46,15 +46,8 @@ public class FactorySupplier implements Runnable {
                             LOG.info("{} is removed component {} from conveyor belt.", this.name,
                                     this.conveyorBelt.peek());
                         }
-                    } catch (InterruptedException e) {
-                        LOG.error("{} was interrupted and is being shut down", this.name);
-                        Thread.currentThread().interrupt();
                     }
-                }
 
-                //make another check before adding element, the thread might of been interrupted while it was
-                // in wait previous to this block of code
-                if (!Thread.currentThread().isInterrupted()) {
                     Component component = this.componentGenerator.retrieveComponent();
 
                     this.conveyorBelt.offer(component);
@@ -64,15 +57,13 @@ public class FactorySupplier implements Runnable {
 
                     this.conveyorBelt.notifyAll();
                 }
-            }
 
-            try {
                 //sleep is outside synchronized block
                 Thread.sleep(TIME_IN_MILLIS_TO_WAIT_BEFORE_ADDING_NEXT_COMPONENT);
-            } catch (InterruptedException ie) {
-                LOG.error("{} was interrupted and is being shut down", this.name);
-                Thread.currentThread().interrupt();
             }
+        } catch (InterruptedException e) {
+            LOG.error("{} was interrupted and is being shut down", this.name);
+            Thread.currentThread().interrupt();
         }
     }
 
