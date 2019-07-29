@@ -42,9 +42,9 @@ public class FactorySupplier implements Runnable {
                         this.conveyorBelt.wait(MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL);
 
                         if (this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT) {
-                            this.conveyorBelt.remove();
+                            Component component = this.conveyorBelt.remove();
                             LOG.info("{} removed component {} from conveyor belt.", this.name,
-                                    this.conveyorBelt.peek());
+                                    component.name());
                         }
                     }
 

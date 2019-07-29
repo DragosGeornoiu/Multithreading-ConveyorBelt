@@ -60,6 +60,7 @@ public class Worker implements Runnable {
 
     private boolean isComponentFromConveyorBeltNeeded(Component component) {
         if (component == null) {
+            //on debug to not pollute the console
             LOG.debug("Worker {} found queue empty.", this.name);
             return false;
         }
@@ -73,7 +74,7 @@ public class Worker implements Runnable {
         }
 
         if (!robotComponentsPair.isComponentNeeded()) {
-            LOG.info("Worker {} does not need component {} since it has {}", this.name, component.name(),
+            LOG.info("Worker {} does not need component {} since it already has {}.", this.name, component.name(),
                     robotComponentsPair.getNumberOfComponentsCurrentlyPossessed());
             return false;
         }

@@ -34,7 +34,7 @@ public class ACMEFactory {
      */
     public FactorySupplier getFactorySupplier(String name) {
         Queue<Component> conveyorBelt = QueueStorage.getConveyorBelt();
-        return new FactorySupplier(name, conveyorBelt, componentGenerator);
+        return new FactorySupplier(name, conveyorBelt, this.componentGenerator);
     }
 
     /**

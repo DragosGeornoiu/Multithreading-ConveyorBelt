@@ -17,11 +17,11 @@ public class RobotComponentsPair {
     }
 
     public void addComponent() {
-        numberOfComponentsCurrentlyPossessed++;
+        this.numberOfComponentsCurrentlyPossessed++;
     }
 
     public void clearPossesedComponents() {
-        numberOfComponentsCurrentlyPossessed = 0;
+        this.numberOfComponentsCurrentlyPossessed = 0;
     }
 
     public int getNumberOfComponentsNeeded() {

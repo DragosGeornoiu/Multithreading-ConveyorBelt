@@ -3,6 +3,7 @@
 - maven
 
 ## Running the tests
+Enter the root directory of the application and run the following command
 ```
 mvn test
 ```
@@ -41,6 +42,7 @@ mvn test
     - testMultipleDryRobotsCanAssembleEachARobot: tests that multiple Workers that assemble DRY200 robots can complete one robot each.
 
 ## Running the application
+Enter the root directory of the application and run the following command
 ```
 mvn clean package -DskipTests=true
 java -jar ./target/ACMEFactory.jar arg1 arg2 arg3
@@ -84,7 +86,7 @@ make sensible assumptions, justify them and implement the application logic acco
 
 ## Solution
 
-The problem was solved using the Producer-Consumer pattern. The factory supplier is the producer, which puts components on 
+The problem was implemented using the Producer-Consumer pattern. The factory supplier is the producer, which puts components on 
 the conveyor belt, and the Consumers are the workers which build DRY2000 or WET2000 robots.
 
 The FactorySupplier is a thread which puts components on the conveyor belt at a one second interval. If the conveyor belt 

@@ -25,6 +25,6 @@ public class DefaultComponentGeneratorService implements ComponentGeneratorServi
 
     @Override
     public Component retrieveComponent() {
-        return componentList.get(randomGenerator.nextInt(noOfPossibleComponents));
+        return this.componentList.get(this.randomGenerator.nextInt(this.noOfPossibleComponents));
     }
 }
