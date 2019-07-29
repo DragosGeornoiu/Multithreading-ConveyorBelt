@@ -71,10 +71,10 @@ way to the room where both workers wait for them. They want to grab all the comp
 It has to be the element at the end of the belt - worker can't check other items on the belt to pick the one he needs. 
 Once they have them, they go to the assembly room to put things together to create a cleaning robot - it takes exactly 3 
 seconds. Once it's done they just shout how many robots they have assembled in their lifetime and immediately go back to 
-the conveyer belt to wait for the components they need to assemble the next robot.Conveyer belt has a size limit - it can 
+the conveyor belt to wait for the components they need to assemble the next robot.Conveyer belt has a size limit - it can 
 fit at most 10 items. If it's full and the items can't be picked up from the conveyer belt by workers (because they're 
 assembling robot at the moment), supplier will not put another one on it. However, it's still possible that the item 
-available at the end of the conveyer belt in a given moment will not suit any of the workers, so they get stuck - to 
+available at the end of the conveyor belt in a given moment will not suit any of the workers, so they get stuck - to 
 prevent them waiting forever, if supplier was unable to put an item on the conveyor belt for more than 10 seconds, he can 
 just go to the room where the conveyor belt ends and destroy the last item.  
 
@@ -119,7 +119,11 @@ more than one thread in parallel.
 ## Possible issues
 
 The Factory supplier will add a component on the conveyor belt and wait for one second before trying to acquire again 
-the lock for the conveyor belt and add another component. Based on the current implmentation, it will take more than 
+the lock for the conveyor belt and add another component. Based on the current implementation, it will take more than 
 one second to add the next component because after waiting the second, it will wait to
 acquire the lock, which, depending mostly on the number of workers, might violate the constraint of adding a new 
 component on the conveyor belt each second.
+
+Both FactorySupplier and Worker classes could of used conveyorBelt.notify() instead of conveyorBelt.notifyAll(), since 
+they are Mutual Exclusive, wanting to acquire lock on same object. However, the performance impact is very small for 
+using notifyAll() instead of notify() and generally it is prefered since it is less error prone.
