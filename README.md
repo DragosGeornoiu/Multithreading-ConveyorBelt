@@ -39,7 +39,7 @@ mvn test
 ## Running the application
 ```
 mvn clean package -DskipTests=true
-java -jar ./target/Multithreading-ConveyorBelt-1.0-SNAPSHOT-jar-with-dependencies.jar arg1 arg2 arg3
+java -jar ./target/ACMEFactory.jar arg1 arg2 arg3
 ```
 
 **Where**
@@ -50,7 +50,7 @@ java -jar ./target/Multithreading-ConveyorBelt-1.0-SNAPSHOT-jar-with-dependencie
 **Example:**
 ```
 mvn clean package -DskipTests=true
-java -jar ./target/Multithreading-ConveyorBelt-1.0-SNAPSHOT-jar-with-dependencies.jar 2 2 120
+java -jar ./target/ACMEFactory.jar 2 2 120
 ```
 
 ## Problem
@@ -95,6 +95,10 @@ if it needs that type of component to assemble the robot and take it from the co
 wait for another component that it needs. If it manages to gather the components needed to build a robot, it will print 
 the number of robots  it assembled in his entire lifetime. The worker will try to aquire the lock on the conveyor belt 
 when it peeks on the last component of the conveyor belt and when it takes the component from the conveyor belt.
+
+**NOTE:** Decided on using Thread.currentThread().isInterrupted() and interrupt() method instead of also making local 
+volatile boolean. The use of one over the other is highly debatable and for the context of this application I  did not 
+find any need for the second version.
 
 The RobotComponentsPair is designed to hold the number of components needed and the number of components each worker 
 currently has.

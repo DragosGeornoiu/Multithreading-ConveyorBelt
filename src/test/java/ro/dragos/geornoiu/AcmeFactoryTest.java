@@ -1,6 +1,7 @@
 package ro.dragos.geornoiu;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ro.dragos.geornoiu.enums.Component;
@@ -21,8 +22,13 @@ public class AcmeFactoryTest {
         acmeFactory = new ACMEFactory(componentGeneratorService);
     }
 
+    @Before
+    public void clearQueue() {
+        QueueStorage.getConveyorBelt().clear();
+    }
+
     /**
-     * Nedded in case the implementation for the queue is changed from a queue with a fixed size which will violate
+     * Needed in case the implementation for the queue is changed from a queue with a fixed size which will violate
      * the rule of allowing only at max 10 elements for the conveyor belt.
      */
     @Test
@@ -36,6 +42,9 @@ public class AcmeFactoryTest {
         Assert.assertFalse(conveyorBelt.offer(Component.MAIN_UNIT));
     }
 
+    /**
+     * Test that creating a worker with null as type will throw InvalidRobotTypeException.
+     */
     @Test(expected = InvalidRobotTypeException.class)
     public void testInvalidRobotTypeException() {
         acmeFactory.getWorker(null, "");

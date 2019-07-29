@@ -26,7 +26,6 @@ public class Main {
             } catch (InvalidRobotTypeException irte) {
                 LOG.error("Invalid robot type given as parameter for Worker");
             }
-
         }
 
         for (int i = 0; i < noOfWet2000Workers; i++) {

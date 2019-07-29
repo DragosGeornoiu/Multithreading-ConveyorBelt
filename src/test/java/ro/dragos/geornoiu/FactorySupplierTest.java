@@ -1,7 +1,7 @@
 package ro.dragos.geornoiu;
 
-import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ro.dragos.geornoiu.constants.ACMEConstants;
@@ -25,11 +25,14 @@ public class FactorySupplierTest {
         acmeFactory = new ACMEFactory(componentGeneratorService);
     }
 
-    @After
+    @Before
     public void clearQueue() {
         QueueStorage.getConveyorBelt().clear();
     }
 
+    /**
+     * Verify that one producer will not add more than 10 elements on the conveyor belt.
+     */
     @Test
     public void testQueueLimitWithOneProducer() {
         FactorySupplier factorySupplier = acmeFactory.getFactorySupplier(PRODUCER_NAME);
@@ -50,6 +53,9 @@ public class FactorySupplierTest {
         }
     }
 
+    /**
+     * Verifies that more than one producer will not add more than 10 elements on the conveyor belt.
+     */
     @Test
     public void testQueueLimitWithMultipleProducers() {
         List<Thread> threadList = new ArrayList<>();
@@ -76,8 +82,11 @@ public class FactorySupplierTest {
         }
     }
 
+    /**
+     * Checks that producer adds elements to queue at a one second interval.
+     */
     @Test
-    public void testProducerAddsToQueuAtOneSecondInterval() {
+    public void testProducerAddsToQueueAtOneSecondInterval() {
         FactorySupplier factorySupplierWorker = acmeFactory.getFactorySupplier(PRODUCER_NAME);
         Thread factorySupplierThread = new Thread(factorySupplierWorker);
         factorySupplierThread.start();

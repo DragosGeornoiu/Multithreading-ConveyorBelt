@@ -8,7 +8,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Acts as a storage class for the conveyor belt, a queue of {@link Component} elements.
- * The retrieval of conveyor belt also implements the singleton pattern for the purpose of allowing a single
+ * The retrieval of conveyor belt implements the singleton pattern for the purpose of allowing a single
  * conveyor belt in the entire application.
  */
 public class QueueStorage {

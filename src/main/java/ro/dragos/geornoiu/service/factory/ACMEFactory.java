@@ -16,7 +16,7 @@ import java.util.Queue;
  * Factory responsible of building the objects of the application.
  */
 public class ACMEFactory {
-    private ComponentGeneratorService componentGenerator;
+    private final ComponentGeneratorService componentGenerator;
 
     private static final int NUMBER_OF_MAIN_UNITS_FOR_ROBOTS = 1;
     private static final int NUMBER_OF_BROOMS_FOR_DRY2000_ROBOT = 2;
@@ -29,12 +29,12 @@ public class ACMEFactory {
     /**
      * Retrieve factory supplier.
      *
-     * @param producerName representing the name of the factory supplier.
+     * @param name representing the name of the factory supplier.
      * @return the factory supplier.
      */
-    public FactorySupplier getFactorySupplier(String producerName) {
+    public FactorySupplier getFactorySupplier(String name) {
         Queue<Component> conveyorBelt = QueueStorage.getConveyorBelt();
-        return new FactorySupplier(producerName, conveyorBelt, componentGenerator);
+        return new FactorySupplier(name, conveyorBelt, componentGenerator);
     }
 
     /**

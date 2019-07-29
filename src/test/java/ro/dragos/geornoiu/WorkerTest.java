@@ -34,6 +34,9 @@ public class WorkerTest {
         QueueStorage.getConveyorBelt().clear();
     }
 
+    /**
+     * Verifies that a worker which builds DRY2000 robots needs a MainUnit and two BROOM components for each robot.
+     */
     @Test
     public void testDryRobotComponentsNeeded() {
         Worker dryRobotWorker = acmeFactory.getWorker(RobotType.DRY2000, WORKER_NAME);
@@ -52,6 +55,9 @@ public class WorkerTest {
         Assert.assertNull(dryRobotMopPair);
     }
 
+    /**
+     * Verifies that a worker which builds WET2000 robots needs a MainUnit and two MOP components for each robot.
+     */
     @Test
     public void testWetRobotComponentsNeeded() {
         Worker wetRobotWorker = acmeFactory.getWorker(RobotType.WET2000, WORKER_NAME);
@@ -70,6 +76,10 @@ public class WorkerTest {
         Assert.assertNull(wetRobotMopPair);
     }
 
+    /**
+     * Verifies that using only BROOM components, neither the worker that builds DRY2000 robots, neither the worker
+     * that builds WET2000 components can complete a robot.
+     */
     @Test
     public void testWorkersCannotCompleteRobotWithOnlyBroomElements() {
         ComponentGeneratorService componentGeneratorService = Mockito.mock(ComponentGeneratorService.class);
@@ -78,6 +88,10 @@ public class WorkerTest {
         testWorkersCannotCompleteRobot(componentGeneratorService);
     }
 
+    /**
+     * Verifies that using only MOP components, neither the worker that builds DRY2000 robots, neither the worker that
+     * builds WET2000 components can complete a robot.
+     */
     @Test
     public void testWorkersCannotCompleteRobotWithOnlyMopElements() {
         ComponentGeneratorService componentGeneratorService = Mockito.mock(ComponentGeneratorService.class);
@@ -86,6 +100,10 @@ public class WorkerTest {
         testWorkersCannotCompleteRobot(componentGeneratorService);
     }
 
+    /**
+     * Verifies that using only MainUnit components, neither the worker that builds DRY2000 robots, neither the worker
+     * that builds WET2000 components can complete a robot.
+     */
     @Test
     public void testWorkersCannotCompleteRobotWithOnlyMainUnitElements() {
         ComponentGeneratorService componentGeneratorService = Mockito.mock(ComponentGeneratorService.class);
@@ -94,6 +112,10 @@ public class WorkerTest {
         testWorkersCannotCompleteRobot(componentGeneratorService);
     }
 
+    /**
+     * Tests that a Worker that builds DRY2000 robots can complete a robot using one MainUnit component and two BROOM
+     * components.
+     */
     @Test
     public void testDryWorkerCanCompleteRobot() {
         Queue<Component> conveyorBelt = QueueStorage.getConveyorBelt();
@@ -117,6 +139,10 @@ public class WorkerTest {
         Assert.assertEquals(dryRobotWorker.getNoOfAssembledRobots(), 1);
     }
 
+    /**
+     * Tests that a Worker that builds WET2000 robots can complete a robot using one MainUnit component and two MOP
+     * components.
+     */
     @Test
     public void testWetWorkerCanCompleteRobot() {
         Queue<Component> conveyorBelt = QueueStorage.getConveyorBelt();
@@ -140,6 +166,11 @@ public class WorkerTest {
         Assert.assertEquals(wetRobotWorker.getNoOfAssembledRobots(), 1);
     }
 
+    /**
+     * Tests that if the queue has two MainUnit components, two BROOM components and two MOP components, both the
+     * Worker that builds the WET2000 robots and the Worker that builds the DRY2000 robots will be able to complete
+     * a single robot.
+     */
     @Test
     public void testBothWorkersCanCompleteRobot() {
         Queue<Component> conveyorBelt = QueueStorage.getConveyorBelt();
@@ -172,6 +203,9 @@ public class WorkerTest {
         Assert.assertEquals(wetRobotWorker.getNoOfAssembledRobots(), 1);
     }
 
+    /**
+     * Tests that if no MainUnit component is on the queue, no Worker can complete assembling a robot.
+     */
     @Test
     public void testBothWorkersNeedMainUnitToCompleteRobot() {
         Queue<Component> conveyorBelt = QueueStorage.getConveyorBelt();
