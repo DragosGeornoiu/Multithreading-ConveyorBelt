@@ -43,7 +43,7 @@ public class FactorySupplier implements Runnable {
 
                         if (this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT) {
                             this.conveyorBelt.remove();
-                            LOG.info("{} is removed component {} from conveyor belt.", this.name,
+                            LOG.info("{} removed component {} from conveyor belt.", this.name,
                                     this.conveyorBelt.peek());
                         }
                     }

@@ -15,6 +15,8 @@ import ro.dragos.geornoiu.service.factory.ACMEFactory;
 import ro.dragos.geornoiu.service.factory.QueueStorage;
 import ro.dragos.geornoiu.service.impl.DefaultComponentGeneratorService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -260,6 +262,156 @@ public class WorkerTest {
 
         RobotComponentsPair wetRobotMopPair = wetRobotComponents.get(Component.BROOM);
         Assert.assertNull(wetRobotMopPair);
+    }
+
+    /**
+     * Tests that if a Worker which assembles DRY200 robots can complete multiple robots.
+     */
+    @Test
+    public void testDryWorkerCanAssembleMultipleRobots() {
+        Queue<Component> conveyorBelt = QueueStorage.getConveyorBelt();
+        conveyorBelt.add(Component.BROOM);
+        conveyorBelt.add(Component.BROOM);
+        conveyorBelt.add(Component.MAIN_UNIT);
+        conveyorBelt.add(Component.BROOM);
+        conveyorBelt.add(Component.BROOM);
+        conveyorBelt.add(Component.MAIN_UNIT);
+        conveyorBelt.add(Component.BROOM);
+        conveyorBelt.add(Component.BROOM);
+        conveyorBelt.add(Component.MAIN_UNIT);
+
+        Worker dryRobotWorker = acmeFactory.getWorker(RobotType.DRY2000, WORKER_NAME);
+        Thread dryRobotThread = new Thread(dryRobotWorker);
+        dryRobotThread.start();
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ie) {
+            ie.printStackTrace();
+            Assert.fail("Current thread was interrupted");
+        }
+
+        dryRobotThread.interrupt();
+
+        Assert.assertEquals(dryRobotWorker.getNoOfAssembledRobots(), 3);
+    }
+
+    /**
+     * Tests that if a Worker which assembles WET2000 ROBOTS can complete multiple robots.
+     */
+    @Test
+    public void testWetWorkerCanAssembleMultipleRobots() {
+        Queue<Component> conveyorBelt = QueueStorage.getConveyorBelt();
+        conveyorBelt.add(Component.MOP);
+        conveyorBelt.add(Component.MOP);
+        conveyorBelt.add(Component.MAIN_UNIT);
+        conveyorBelt.add(Component.MOP);
+        conveyorBelt.add(Component.MOP);
+        conveyorBelt.add(Component.MAIN_UNIT);
+        conveyorBelt.add(Component.MOP);
+        conveyorBelt.add(Component.MOP);
+        conveyorBelt.add(Component.MAIN_UNIT);
+
+        Worker wetRobotWorker = acmeFactory.getWorker(RobotType.WET2000, WORKER_NAME);
+        Thread wetRobotThread = new Thread(wetRobotWorker);
+        wetRobotThread.start();
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ie) {
+            ie.printStackTrace();
+            Assert.fail("Current thread was interrupted");
+        }
+
+        wetRobotThread.interrupt();
+
+        Assert.assertEquals(wetRobotWorker.getNoOfAssembledRobots(), 3);
+    }
+
+    /**
+     * Tests that multiple Workers that assemble WET200 robots can complete one robot each.
+     */
+    @Test
+    public void testMultipleWetRobotsCanAssembleEachARobot() {
+        Queue<Component> conveyorBelt = QueueStorage.getConveyorBelt();
+        conveyorBelt.add(Component.MOP);
+        conveyorBelt.add(Component.MOP);
+        conveyorBelt.add(Component.MAIN_UNIT);
+        conveyorBelt.add(Component.MOP);
+        conveyorBelt.add(Component.MOP);
+        conveyorBelt.add(Component.MAIN_UNIT);
+        conveyorBelt.add(Component.MOP);
+        conveyorBelt.add(Component.MOP);
+        conveyorBelt.add(Component.MAIN_UNIT);
+
+        List<Worker> listOfWorkers = new ArrayList<>();
+        List<Thread> listOfThreads = new ArrayList<>();
+
+        for (int index = 0; index < 3; index++) {
+            Worker wetRobotWorker = acmeFactory.getWorker(RobotType.WET2000, WORKER_NAME);
+            Thread wetRobotThread = new Thread(wetRobotWorker);
+
+            listOfThreads.add(wetRobotThread);
+            listOfWorkers.add(wetRobotWorker);
+
+            wetRobotThread.start();
+        }
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ie) {
+            ie.printStackTrace();
+            Assert.fail("Current thread was interrupted");
+        }
+
+        for (int index = 0; index < 3; index++) {
+            listOfThreads.get(index).interrupt();
+
+            Assert.assertEquals(listOfWorkers.get(index).getNoOfAssembledRobots(), 1);
+        }
+    }
+
+    /**
+     * Tests that multiple Workers that assemble DRY200 robots can complete one robot each.
+     */
+    @Test
+    public void testMultipleDryRobotsCanAssembleEachARobot() {
+        Queue<Component> conveyorBelt = QueueStorage.getConveyorBelt();
+        conveyorBelt.add(Component.BROOM);
+        conveyorBelt.add(Component.BROOM);
+        conveyorBelt.add(Component.MAIN_UNIT);
+        conveyorBelt.add(Component.BROOM);
+        conveyorBelt.add(Component.BROOM);
+        conveyorBelt.add(Component.MAIN_UNIT);
+        conveyorBelt.add(Component.BROOM);
+        conveyorBelt.add(Component.BROOM);
+        conveyorBelt.add(Component.MAIN_UNIT);
+
+        List<Worker> listOfWorkers = new ArrayList<>();
+        List<Thread> listOfThreads = new ArrayList<>();
+
+        for (int index = 0; index < 3; index++) {
+            Worker dryRobotWorker = acmeFactory.getWorker(RobotType.DRY2000, WORKER_NAME);
+            Thread dryRobotThread = new Thread(dryRobotWorker);
+
+            listOfThreads.add(dryRobotThread);
+            listOfWorkers.add(dryRobotWorker);
+
+            dryRobotThread.start();
+        }
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ie) {
+            ie.printStackTrace();
+            Assert.fail("Current thread was interrupted");
+        }
+
+        for (int index = 0; index < 3; index++) {
+            listOfThreads.get(index).interrupt();
+
+            Assert.assertEquals(listOfWorkers.get(index).getNoOfAssembledRobots(), 1);
+        }
     }
 
     private void testWorkersCannotCompleteRobot(ComponentGeneratorService componentGeneratorService) {

@@ -35,6 +35,10 @@ mvn test
     able to complete a single robot.
     - testBothWorkersNeedMainUnitToCompleteRobot: tests that if no MainUnit component is on the queue, no Worker can 
     complete assembling a robot.
+    - testDryWorkerCanAssembleMultipleRobots: tests that if a Worker which assembles DRY200 robots can complete multiple robots.
+    - testWetWorkerCanAssembleMultipleRobots: tests that if a Worker which assembles WET2000 ROBOTS can complete multiple robots.
+    - testMultipleWetRobotsCanAssembleEachARobot: tests that multiple Workers that assemble WET200 robots can complete one robot each.
+    - testMultipleDryRobotsCanAssembleEachARobot: tests that multiple Workers that assemble DRY200 robots can complete one robot each.
 
 ## Running the application
 ```
