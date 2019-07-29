@@ -37,10 +37,13 @@ public class FactorySupplier implements Runnable {
                     while (this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT) {
                         LOG.info("Queue is full. {} is waiting.", this.name);
 
-                        // queue is full, wait until a consumer takes a component from the conveyor belt and notifies
-                        // the producer or remove the fist component on the queue if 10 seconds have passed
+                        // Queue is full, wait until a consumer takes a component from the conveyor belt and notifies
+                        // the producer or remove the fist component on the queue if 10 seconds have passed.
                         this.conveyorBelt.wait(MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL);
 
+                        // Check again the capacity in case the FactorySupplier did wait for the entire duration of
+                        // MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL and it has to remove the first component
+                        // form the queue.
                         if (this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT) {
                             Component component = this.conveyorBelt.remove();
                             LOG.info("{} removed component {} from conveyor belt.", this.name,
@@ -55,6 +58,8 @@ public class FactorySupplier implements Runnable {
                     LOG.info("{} added component {} to conveyor belt", this.name, component.name());
                     this.printQueue();
 
+                    // Notify that the lock on the conveyor belt will be released in order to awaken the threads
+                    // which are in waiting state.
                     this.conveyorBelt.notifyAll();
                 }
 
@@ -63,6 +68,7 @@ public class FactorySupplier implements Runnable {
             }
         } catch (InterruptedException e) {
             LOG.error("{} was interrupted and is being shut down", this.name);
+            //Need to reset the interrupt flag because it might of been set to false when exception was thrown.
             Thread.currentThread().interrupt();
         }
     }

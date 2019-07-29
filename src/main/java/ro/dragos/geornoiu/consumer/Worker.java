@@ -34,6 +34,8 @@ public class Worker implements Runnable {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 synchronized (this.conveyorBelt) {
+                    // Wait until the queue is not empty and the first component on the queue is one needed by the
+                    // current worker.
                     while (!isComponentFromConveyorBeltNeeded(this.conveyorBelt.peek())) {
                         this.conveyorBelt.wait();
                     }
@@ -44,6 +46,8 @@ public class Worker implements Runnable {
                     LOG.info("Worker {} has taken component {} from the conveyor belt. Queue size is now {}.",
                             this.name, component.name(), this.conveyorBelt.size());
 
+                    // Notify that the lock on the conveyor belt will be released in order to awaken the threads
+                    // which are in waiting state.
                     this.conveyorBelt.notifyAll();
                 }
 
@@ -54,6 +58,7 @@ public class Worker implements Runnable {
             }
         } catch (InterruptedException ie) {
             LOG.error("{} was interrupted and is being shut down", this.name);
+            //Need to reset the interrupt flag because it might of been set to false when exception was thrown.
             Thread.currentThread().interrupt();
         }
     }
@@ -74,8 +79,9 @@ public class Worker implements Runnable {
         }
 
         if (!robotComponentsPair.isComponentNeeded()) {
-            LOG.info("Worker {} does not need component {} since it already has {}.", this.name, component.name(),
-                    robotComponentsPair.getNumberOfComponentsCurrentlyPossessed());
+            LOG.info("Worker {} does not need component {} since it already has {} of {}.", this.name, component.name(),
+                    robotComponentsPair.getNumberOfComponentsCurrentlyPossessed(),
+                    robotComponentsPair.getNumberOfComponentsNeeded());
             return false;
         }
 

@@ -116,4 +116,10 @@ The conveyor belt is retrieved from the QueueStorage class, which is a Singleton
 Double Checked Locking of Singleton, to not allow the creation of multiple conveyor belts if called by 
 more than one thread in parallel. 
 
+## Possible issues
 
+The Factory supplier will add a component on the conveyor belt and wait for one second before trying to acquire again 
+the lock for the conveyor belt and add another component. Based on the current implmentation, it will take more than 
+one second to add the next component because after waiting the second, it will wait to
+acquire the lock, which, depending mostly on the number of workers, might violate the constraint of adding a new 
+component on the conveyor belt each second.
