@@ -15,6 +15,9 @@ import java.util.Queue;
 public class FactorySupplier implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(FactorySupplier.class);
 
+    //volatile in order to not be cached and any modification from an external thread to be seen in current thread.
+    private volatile boolean isRunning;
+
     private final String name;
     private final ComponentGeneratorService componentGenerator;
     private final Queue<Component> conveyorBelt;
@@ -24,6 +27,7 @@ public class FactorySupplier implements Runnable {
 
     public FactorySupplier(String name, Queue<Component> conveyorBelt,
                            ComponentGeneratorService componentGenerator) {
+        this.isRunning = true;
         this.name = name;
         this.conveyorBelt = conveyorBelt;
         this.componentGenerator = componentGenerator;
@@ -32,7 +36,7 @@ public class FactorySupplier implements Runnable {
     @Override
     public void run() {
         try {
-            while (!Thread.currentThread().isInterrupted()) {
+            while (this.isRunning) {
                 synchronized (this.conveyorBelt) {
                     while (this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT) {
                         LOG.info("Queue is full. {} is waiting.", this.name);
@@ -49,6 +53,11 @@ public class FactorySupplier implements Runnable {
                             LOG.info("{} removed component {} from conveyor belt.", this.name,
                                     component.name());
                         }
+                    }
+
+                    //do not add another component if current thread is stopped
+                    if (!isRunning) {
+                        break;
                     }
 
                     Component component = this.componentGenerator.retrieveComponent();
@@ -68,9 +77,15 @@ public class FactorySupplier implements Runnable {
             }
         } catch (InterruptedException e) {
             LOG.error("{} was interrupted and is being shut down", this.name);
-            //Need to reset the interrupt flag because it might of been set to false when exception was thrown.
-            Thread.currentThread().interrupt();
+            stop();
         }
+    }
+
+    /**
+     * Stop execution of thread by setting isRunningFlag to false.
+     */
+    public void stop() {
+        this.isRunning = false;
     }
 
     private void printQueue() {

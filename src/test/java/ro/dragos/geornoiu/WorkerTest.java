@@ -130,13 +130,13 @@ public class WorkerTest {
         dryRobotThread.start();
 
         try {
-            Thread.sleep(2000);
+            Thread.sleep(6000);
         } catch (InterruptedException ie) {
             ie.printStackTrace();
             Assert.fail("Current thread was interrupted");
         }
 
-        dryRobotThread.interrupt();
+        dryRobotWorker.stop();
 
         Assert.assertEquals(dryRobotWorker.getNoOfAssembledRobots(), 1);
     }
@@ -153,17 +153,16 @@ public class WorkerTest {
         conveyorBelt.add(Component.MOP);
 
         Worker wetRobotWorker = acmeFactory.getWorker(RobotType.WET2000, WORKER_NAME);
-        Thread wetRobotThread = new Thread(wetRobotWorker);
-        wetRobotThread.start();
+        new Thread(wetRobotWorker).start();
 
         try {
-            Thread.sleep(2000);
+            Thread.sleep(4000);
         } catch (InterruptedException ie) {
             ie.printStackTrace();
             Assert.fail("Current thread was interrupted");
         }
 
-        wetRobotThread.interrupt();
+        wetRobotWorker.stop();
 
         Assert.assertEquals(wetRobotWorker.getNoOfAssembledRobots(), 1);
     }
@@ -184,22 +183,20 @@ public class WorkerTest {
         conveyorBelt.add(Component.BROOM);
 
         Worker dryRobotWorker = acmeFactory.getWorker(RobotType.DRY2000, WORKER_NAME);
-        Thread dryRobotThread = new Thread(dryRobotWorker);
-        dryRobotThread.start();
+        new Thread(dryRobotWorker).start();
 
         Worker wetRobotWorker = acmeFactory.getWorker(RobotType.WET2000, WORKER_NAME);
-        Thread wetRobotThread = new Thread(wetRobotWorker);
-        wetRobotThread.start();
+        new Thread(wetRobotWorker).start();
 
         try {
-            Thread.sleep(2000);
+            Thread.sleep(4000);
         } catch (InterruptedException ie) {
             ie.printStackTrace();
             Assert.fail("Current thread was interrupted");
         }
 
-        dryRobotThread.interrupt();
-        wetRobotThread.interrupt();
+        dryRobotWorker.stop();
+        wetRobotWorker.stop();
 
         Assert.assertEquals(dryRobotWorker.getNoOfAssembledRobots(), 1);
         Assert.assertEquals(wetRobotWorker.getNoOfAssembledRobots(), 1);
@@ -217,12 +214,10 @@ public class WorkerTest {
         conveyorBelt.add(Component.BROOM);
 
         Worker dryRobotWorker = acmeFactory.getWorker(RobotType.DRY2000, WORKER_NAME);
-        Thread dryRobotThread = new Thread(dryRobotWorker);
-        dryRobotThread.start();
+        new Thread(dryRobotWorker).start();
 
         Worker wetRobotWorker = acmeFactory.getWorker(RobotType.WET2000, WORKER_NAME);
-        Thread wetRobotThread = new Thread(wetRobotWorker);
-        wetRobotThread.start();
+        new Thread(wetRobotWorker).start();
 
         try {
             Thread.sleep(2000);
@@ -231,8 +226,8 @@ public class WorkerTest {
             Assert.fail("Current thread was interrupted");
         }
 
-        dryRobotThread.interrupt();
-        wetRobotThread.interrupt();
+        dryRobotWorker.stop();
+        wetRobotWorker.stop();
 
         Assert.assertEquals(dryRobotWorker.getNoOfAssembledRobots(), 0);
         Assert.assertEquals(wetRobotWorker.getNoOfAssembledRobots(), 0);
@@ -281,17 +276,16 @@ public class WorkerTest {
         conveyorBelt.add(Component.MAIN_UNIT);
 
         Worker dryRobotWorker = acmeFactory.getWorker(RobotType.DRY2000, WORKER_NAME);
-        Thread dryRobotThread = new Thread(dryRobotWorker);
-        dryRobotThread.start();
+        new Thread(dryRobotWorker).start();
 
         try {
-            Thread.sleep(10000);
+            Thread.sleep(12000);
         } catch (InterruptedException ie) {
             ie.printStackTrace();
             Assert.fail("Current thread was interrupted");
         }
 
-        dryRobotThread.interrupt();
+        dryRobotWorker.stop();
 
         Assert.assertEquals(dryRobotWorker.getNoOfAssembledRobots(), 3);
     }
@@ -313,17 +307,17 @@ public class WorkerTest {
         conveyorBelt.add(Component.MAIN_UNIT);
 
         Worker wetRobotWorker = acmeFactory.getWorker(RobotType.WET2000, WORKER_NAME);
-        Thread wetRobotThread = new Thread(wetRobotWorker);
-        wetRobotThread.start();
+        Thread t = new Thread(wetRobotWorker);
+        t.start();
 
         try {
-            Thread.sleep(10000);
+            Thread.sleep(12000);
         } catch (InterruptedException ie) {
             ie.printStackTrace();
             Assert.fail("Current thread was interrupted");
         }
 
-        wetRobotThread.interrupt();
+        t.stop();
 
         Assert.assertEquals(wetRobotWorker.getNoOfAssembledRobots(), 3);
     }
@@ -345,16 +339,13 @@ public class WorkerTest {
         conveyorBelt.add(Component.MAIN_UNIT);
 
         List<Worker> listOfWorkers = new ArrayList<>();
-        List<Thread> listOfThreads = new ArrayList<>();
 
         for (int index = 0; index < 3; index++) {
-            Worker wetRobotWorker = acmeFactory.getWorker(RobotType.WET2000, WORKER_NAME);
-            Thread wetRobotThread = new Thread(wetRobotWorker);
+            Worker wetRobotWorker = acmeFactory.getWorker(RobotType.WET2000, WORKER_NAME + '-' + index);
 
-            listOfThreads.add(wetRobotThread);
             listOfWorkers.add(wetRobotWorker);
 
-            wetRobotThread.start();
+            new Thread(wetRobotWorker).start();
         }
 
         try {
@@ -365,7 +356,7 @@ public class WorkerTest {
         }
 
         for (int index = 0; index < 3; index++) {
-            listOfThreads.get(index).interrupt();
+            listOfWorkers.get(index).stop();
 
             Assert.assertEquals(listOfWorkers.get(index).getNoOfAssembledRobots(), 1);
         }
@@ -388,16 +379,13 @@ public class WorkerTest {
         conveyorBelt.add(Component.MAIN_UNIT);
 
         List<Worker> listOfWorkers = new ArrayList<>();
-        List<Thread> listOfThreads = new ArrayList<>();
 
         for (int index = 0; index < 3; index++) {
             Worker dryRobotWorker = acmeFactory.getWorker(RobotType.DRY2000, WORKER_NAME);
-            Thread dryRobotThread = new Thread(dryRobotWorker);
 
-            listOfThreads.add(dryRobotThread);
             listOfWorkers.add(dryRobotWorker);
 
-            dryRobotThread.start();
+            new Thread(dryRobotWorker).start();
         }
 
         try {
@@ -408,7 +396,7 @@ public class WorkerTest {
         }
 
         for (int index = 0; index < 3; index++) {
-            listOfThreads.get(index).interrupt();
+            listOfWorkers.get(index).stop();
 
             Assert.assertEquals(listOfWorkers.get(index).getNoOfAssembledRobots(), 1);
         }
@@ -418,27 +406,24 @@ public class WorkerTest {
         ACMEFactory acmeFactoryWithMockedService = new ACMEFactory(componentGeneratorService);
 
         Worker dryRobotWorker = acmeFactoryWithMockedService.getWorker(RobotType.DRY2000, WORKER_NAME);
-        Thread dryRobotThread = new Thread(dryRobotWorker);
-        dryRobotThread.start();
+        new Thread(dryRobotWorker).start();
 
         Worker wetRobotWorker = acmeFactoryWithMockedService.getWorker(RobotType.WET2000, WORKER_NAME);
-        Thread wetRobotThread = new Thread(wetRobotWorker);
-        wetRobotThread.start();
+        new Thread(wetRobotWorker).start();
 
         FactorySupplier factorySupplier = acmeFactoryWithMockedService.getFactorySupplier("Producer");
-        Thread factorySupplierThread = new Thread(factorySupplier);
-        factorySupplierThread.start();
+        new Thread(factorySupplier).start();
 
         try {
-            Thread.sleep(2000);
+            Thread.sleep(5000);
         } catch (InterruptedException ie) {
             ie.printStackTrace();
             Assert.fail("Current thread was interrupted");
         }
 
-        factorySupplierThread.interrupt();
-        dryRobotThread.interrupt();
-        wetRobotThread.interrupt();
+        factorySupplier.stop();
+        dryRobotWorker.stop();
+        wetRobotWorker.stop();
 
         Assert.assertEquals(dryRobotWorker.getNoOfAssembledRobots(), 0);
         Assert.assertEquals(wetRobotWorker.getNoOfAssembledRobots(), 0);

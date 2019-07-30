@@ -46,7 +46,7 @@ public class FactorySupplierTest {
             Assert.fail("Current thread was interrupted");
         }
 
-        thread.interrupt();
+        factorySupplier.stop();
 
         if (QueueStorage.getConveyorBelt().size() > ACMEConstants.QUEUE_CAPACITY_LIMIT) {
             Assert.fail("Queue limit was exceeded");
@@ -58,12 +58,11 @@ public class FactorySupplierTest {
      */
     @Test
     public void testQueueLimitWithMultipleProducers() {
-        List<Thread> threadList = new ArrayList<>();
+        List<FactorySupplier> factorySupplierList = new ArrayList<>();
         for (int index = 0; index < 5; index++) {
             FactorySupplier factorySupplier = acmeFactory.getFactorySupplier(PRODUCER_NAME);
-            Thread thread = new Thread(factorySupplier);
-            thread.start();
-            threadList.add(thread);
+            new Thread(factorySupplier).start();
+            factorySupplierList.add(factorySupplier);
         }
 
         try {
@@ -74,7 +73,7 @@ public class FactorySupplierTest {
         }
 
         for (int index = 0; index < 5; index++) {
-            threadList.get(index).interrupt();
+            factorySupplierList.get(index).stop();
         }
 
         if (QueueStorage.getConveyorBelt().size() > ACMEConstants.QUEUE_CAPACITY_LIMIT) {
@@ -88,8 +87,7 @@ public class FactorySupplierTest {
     @Test
     public void testProducerAddsToQueueAtOneSecondInterval() {
         FactorySupplier factorySupplierWorker = acmeFactory.getFactorySupplier(PRODUCER_NAME);
-        Thread factorySupplierThread = new Thread(factorySupplierWorker);
-        factorySupplierThread.start();
+        new Thread(factorySupplierWorker).start();
 
         try {
             Thread.sleep(5000);
@@ -98,7 +96,7 @@ public class FactorySupplierTest {
             Assert.fail("Current thread was interrupted");
         }
 
-        factorySupplierThread.interrupt();
+        factorySupplierWorker.stop();
 
         Assert.assertEquals(QueueStorage.getConveyorBelt().size(), 5);
     }

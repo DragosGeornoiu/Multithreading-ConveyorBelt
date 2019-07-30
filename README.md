@@ -102,10 +102,6 @@ wait for another component that it needs. If it manages to gather the components
 the number of robots  it assembled in his entire lifetime. The worker will try to aquire the lock on the conveyor belt 
 when it peeks on the last component of the conveyor belt and when it takes the component from the conveyor belt.
 
-**NOTE:** Decided on using Thread.currentThread().isInterrupted() and interrupt() method instead of also making local 
-volatile boolean. The use of one over the other is highly debatable and for the context of this application I  did not 
-find any need for the second version.
-
 The RobotComponentsPair is designed to hold the number of components needed and the number of components each worker 
 currently has.
 
@@ -116,7 +112,7 @@ The conveyor belt is retrieved from the QueueStorage class, which is a Singleton
 Double Checked Locking of Singleton, to not allow the creation of multiple conveyor belts if called by 
 more than one thread in parallel. 
 
-## Possible issues
+## Decisions and Possible issues
 
 The Factory supplier will add a component on the conveyor belt and wait for one second before trying to acquire again 
 the lock for the conveyor belt and add another component. Based on the current implementation, it will take more than 
@@ -126,4 +122,13 @@ component on the conveyor belt each second.
 
 Both FactorySupplier and Worker classes could of used conveyorBelt.notify() instead of conveyorBelt.notifyAll(), since 
 they are Mutual Exclusive, wanting to acquire lock on same object. However, the performance impact is very small for 
-using notifyAll() instead of notify() and generally it is prefered since it is less error prone.
+using notifyAll() instead of notify() and generally it is preferred since it is less error prone.
+
+Decided of using a boolean flag to control the execution of the threads (FactorySupplier and Worker) instead 
+of using Thread.currentThread().isInterrupted. The advantage of using Thread.currentThread().isInterrupted and interrupt() is that if the code finds itself in an 
+interruptable blocking call (like Thread.sleep for example) you will actually be able to break out of these right away.
+If you use a flag and only call the method that sets the flag to false, you have to wait for the blocking operation to 
+finish and then you can check your flag (Calling interrupt will provide the same behavior). 
+However using a separate flag makes the code more extensible. At some point in 
+application's life there might be a need for other third-party libraries. Those libraries will silently reset 
+interruption flag. Using separate flag solves that.

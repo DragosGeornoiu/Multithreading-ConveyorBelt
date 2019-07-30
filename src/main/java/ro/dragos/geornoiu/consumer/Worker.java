@@ -15,6 +15,9 @@ import java.util.Queue;
 public class Worker implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(Worker.class);
 
+    //volatile in order to not be cached and any modification from an external thread to be seen in current thread.
+    private volatile boolean isRunning;
+
     private int noOfAssembledRobots;
     private final String name;
     private final Queue<Component> conveyorBelt;
@@ -24,6 +27,7 @@ public class Worker implements Runnable {
 
     public Worker(String name, Queue<Component> conveyorBelt,
                   Map<Component, RobotComponentsPair> robotComponentsMap) {
+        this.isRunning = true;
         this.name = name;
         this.conveyorBelt = conveyorBelt;
         this.robotComponentsMap = robotComponentsMap;
@@ -32,12 +36,17 @@ public class Worker implements Runnable {
     @Override
     public void run() {
         try {
-            while (!Thread.currentThread().isInterrupted()) {
+            while (isRunning) {
                 synchronized (this.conveyorBelt) {
                     // Wait until the queue is not empty and the first component on the queue is one needed by the
                     // current worker.
                     while (!isComponentFromConveyorBeltNeeded(this.conveyorBelt.peek())) {
                         this.conveyorBelt.wait();
+                    }
+
+                    //do not remove component from queue if current thread is stopped
+                    if (!isRunning) {
+                        break;
                     }
 
                     Component component = this.conveyorBelt.poll();
@@ -58,9 +67,12 @@ public class Worker implements Runnable {
             }
         } catch (InterruptedException ie) {
             LOG.error("{} was interrupted and is being shut down", this.name);
-            //Need to reset the interrupt flag because it might of been set to false when exception was thrown.
-            Thread.currentThread().interrupt();
+            stop();
         }
+    }
+
+    public void stop() {
+        isRunning = false;
     }
 
     private boolean isComponentFromConveyorBeltNeeded(Component component) {
@@ -102,14 +114,15 @@ public class Worker implements Runnable {
     }
 
     private void assembleRobot() throws InterruptedException {
+        Thread.sleep(NO_OF_MILLIS_NEEDED_TO_BUILD_A_ROBOT);
+
         noOfAssembledRobots++;
+
         for (RobotComponentsPair robotComponentsPair : robotComponentsMap.values()) {
             robotComponentsPair.clearPossesedComponents();
         }
 
         LOG.info("Worker {} has assembled {} robots in his lifetime.", this.name, this.noOfAssembledRobots);
-
-        Thread.sleep(NO_OF_MILLIS_NEEDED_TO_BUILD_A_ROBOT);
     }
 
     public int getNoOfAssembledRobots() {
