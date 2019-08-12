@@ -18,7 +18,7 @@ public class Worker implements Runnable {
     //volatile in order to not be cached and any modification from an external thread to be seen in current thread.
     private volatile boolean isRunning;
 
-    private int noOfAssembledRobots;
+    private volatile int noOfAssembledRobots;
     private final String name;
     private final Queue<Component> conveyorBelt;
     private final Map<Component, RobotComponentsPair> robotComponentsMap;

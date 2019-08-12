@@ -22,6 +22,8 @@ public class FactorySupplier implements Runnable {
     private final ComponentGeneratorService componentGenerator;
     private final Queue<Component> conveyorBelt;
 
+    private long waitTime;
+
     private static final int TIME_IN_MILLIS_TO_WAIT_BEFORE_ADDING_NEXT_COMPONENT = 1000;
     private static final int MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL = 10000;
 
@@ -38,21 +40,24 @@ public class FactorySupplier implements Runnable {
         try {
             while (this.isRunning) {
                 synchronized (this.conveyorBelt) {
-                    while (this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT) {
+                    this.waitTime = MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL;
+                    long start = System.currentTimeMillis();
+
+                    // if queue is full, wait for 10 seconds
+                    while (doWaitCondition()) {
                         LOG.info("Queue is full. {} is waiting.", this.name);
 
-                        // Queue is full, wait until a consumer takes a component from the conveyor belt and notifies
-                        // the producer or remove the fist component on the queue if 10 seconds have passed.
-                        this.conveyorBelt.wait(MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL);
+                        this.conveyorBelt.wait(waitTime);
+                        this.waitTime = System.currentTimeMillis() - start;
+                    }
 
-                        // Check again the capacity in case the FactorySupplier did wait for the entire duration of
-                        // MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL and it has to remove the first component
-                        // form the queue.
-                        if (this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT) {
-                            Component component = this.conveyorBelt.remove();
-                            LOG.info("{} removed component {} from conveyor belt.", this.name,
-                                    component.name());
-                        }
+                    // Check again the capacity in case the FactorySupplier did wait for the entire duration of
+                    // MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL and it has to remove the first component
+                    // form the queue.
+                    if (this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT) {
+                        Component component = this.conveyorBelt.remove();
+                        LOG.info("{} removed component {} from conveyor belt.", this.name,
+                                component.name());
                     }
 
                     //do not add another component if current thread is stopped
@@ -79,6 +84,11 @@ public class FactorySupplier implements Runnable {
             LOG.error("{} was interrupted and is being shut down", this.name);
             stop();
         }
+    }
+
+    private boolean doWaitCondition() {
+        return this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT &&
+                this.waitTime >= MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL;
     }
 
     /**
