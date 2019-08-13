@@ -22,7 +22,8 @@ public class FactorySupplier implements Runnable {
     private final ComponentGeneratorService componentGenerator;
     private final Queue<Component> conveyorBelt;
 
-    private long waitTime;
+    //used to measure the reamining wait time if thread was awakend by a spurious wakeup
+    private long timeToWait;
 
     private static final int TIME_IN_MILLIS_TO_WAIT_BEFORE_ADDING_NEXT_COMPONENT = 1000;
     private static final int MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL = 10000;
@@ -40,15 +41,16 @@ public class FactorySupplier implements Runnable {
         try {
             while (this.isRunning) {
                 synchronized (this.conveyorBelt) {
-                    this.waitTime = MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL;
-                    long start = System.currentTimeMillis();
+                    this.timeToWait = MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL;
+                    long startTime = System.currentTimeMillis();
 
                     // if queue is full, wait for 10 seconds
                     while (doWaitCondition()) {
                         LOG.info("Queue is full. {} is waiting.", this.name);
 
-                        this.conveyorBelt.wait(waitTime);
-                        this.waitTime = System.currentTimeMillis() - start;
+                        this.conveyorBelt.wait(timeToWait);
+                        this.timeToWait = MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL -
+                                (System.currentTimeMillis() - startTime);
                     }
 
                     // Check again the capacity in case the FactorySupplier did wait for the entire duration of
@@ -88,7 +90,7 @@ public class FactorySupplier implements Runnable {
 
     private boolean doWaitCondition() {
         return this.conveyorBelt.size() == ACMEConstants.QUEUE_CAPACITY_LIMIT &&
-                this.waitTime >= MAX_TIME_IN_MILLIS_TO_WAIT_WHEN_QUEUE_IS_FULL;
+                this.timeToWait > 0;
     }
 
     /**
